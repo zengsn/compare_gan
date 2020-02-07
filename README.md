@@ -31,7 +31,7 @@ pip install tensorflow-datasets==1.0.2
 
 ## 2. Known Issues
 
-- See the [commit](https://github.com/zengsn/compare_gan/commits/master) to fix 
+- See the [commit](https://github.com/zengsn/compare_gan/commit/fb34717b4863312c681f8174dfbb1984d9dddeed) to fix 
 ```  
 TypeError: '<=' not supported between instances of 'int' and 'str'
 ```  
