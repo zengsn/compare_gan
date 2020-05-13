@@ -33,6 +33,7 @@ from compare_gan.architectures import resnet5
 from compare_gan.architectures import resnet_biggan
 from compare_gan.architectures import resnet_biggan_deep
 from compare_gan.architectures import resnet_cifar
+from compare_gan.architectures import resnet_mnist
 from compare_gan.architectures import resnet_stl
 from compare_gan.architectures import sndcgan
 from compare_gan.gans import consts as c
@@ -178,6 +179,7 @@ class ModularGAN(AbstractGAN):
           c.RESNET_BIGGAN_ARCH: resnet_biggan.Generator,
           c.RESNET_BIGGAN_DEEP_ARCH: resnet_biggan_deep.Generator,
           c.RESNET_CIFAR_ARCH: resnet_cifar.Generator,
+          c.RESNET_MNIST_ARCH: resnet_mnist.Generator,
           c.RESNET_STL_ARCH: resnet_stl.Generator,
           c.SNDCGAN_ARCH: sndcgan.Generator,
       }
@@ -202,6 +204,7 @@ class ModularGAN(AbstractGAN):
           c.RESNET_BIGGAN_ARCH: resnet_biggan.Discriminator,
           c.RESNET_BIGGAN_DEEP_ARCH: resnet_biggan_deep.Discriminator,
           c.RESNET_CIFAR_ARCH: resnet_cifar.Discriminator,
+          c.RESNET_MNIST_ARCH: resnet_mnist.Discriminator,
           c.RESNET_STL_ARCH: resnet_stl.Discriminator,
           c.SNDCGAN_ARCH: sndcgan.Discriminator,
       }

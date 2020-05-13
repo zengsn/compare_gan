@@ -35,6 +35,7 @@ from absl import logging
 
 from compare_gan.gans import consts
 from compare_gan.tpu import tpu_ops
+from compare_gan.architectures.WaveletDeconvolution import WaveletDeconvolution
 import gin
 from six.moves import range
 import tensorflow as tf
@@ -534,6 +535,36 @@ def spectral_norm(inputs, epsilon=1e-12, singular_value="left"):
   w_tensor_normalized = tf.reshape(w_normalized, inputs.shape)
   return w_tensor_normalized
 
+
+def waveletDeconv(inputs, filter_width=5, kernel_length=500, padding='same', data_format='channels_first', name="wavelet_deconv"):
+  """ WaveletDeconv Layer"""
+  with tf.variable_scope(name):
+    output_shape = inputs.get_shape().as_list()
+    wavelet_input_shape  = inputs.shape
+    input_dims   = len(wavelet_input_shape)
+    outputs = inputs
+    if input_dims==4: # reshape to 3 dims
+      # batch_size, height, width, colors
+      shape_as_list = outputs.get_shape().as_list()
+      # instead of outputs.shape to avoid Dimension values but int values
+      #bs = shape_as_list[0]
+      sh = shape_as_list[1]
+      sw = shape_as_list[2]
+      cl = shape_as_list[3]
+      wavelet_input_shape = [-1, sh*sw, cl]
+      outputs = tf.reshape(outputs, wavelet_input_shape)
+      #print(outputs)
+    
+    assert(len(outputs.shape)==3,"{} length is not 3.".format(str(wavelet_input_shape)))
+    # WaveletDeconv
+    outputs = WaveletDeconvolution(filter_width,
+        name=name,kernel_length=kernel_length,
+        input_shape=wavelet_input_shape, padding=padding, data_format=data_format)(outputs)
+    outputs = tf.reduce_mean(outputs, len(outputs.shape)-1)
+    if input_dims==4: # recover to the original shape
+      outputs = tf.reshape(outputs, [-1,output_shape[1],output_shape[2],output_shape[3]])
+    return outputs 
+    
 
 def linear(inputs, output_size, scope=None, stddev=0.02, bias_start=0.0,
            use_sn=False, use_bias=True):

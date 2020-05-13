@@ -53,7 +53,8 @@ class AbstractGenerator(_Module):
                name="generator",
                image_shape=None,
                batch_norm_fn=None,
-               spectral_norm=False):
+               spectral_norm=False,
+               wavelet_deconv=False):
     """Constructor for all generator architectures.
 
     Args:
@@ -67,6 +68,7 @@ class AbstractGenerator(_Module):
     self._image_shape = image_shape
     self._batch_norm_fn = batch_norm_fn
     self._spectral_norm = spectral_norm
+    self._wavelet_deconv= wavelet_deconv
 
   def __call__(self, z, y, is_training, reuse=tf.AUTO_REUSE):
     with tf.variable_scope(self.name, values=[z, y], reuse=reuse):
@@ -106,12 +108,14 @@ class AbstractDiscriminator(_Module):
                name="discriminator",
                batch_norm_fn=None,
                layer_norm=False,
-               spectral_norm=False):
+               spectral_norm=False,
+               wavelet_deconv=False):
     super(AbstractDiscriminator, self).__init__(name=name)
     self._name = name
     self._batch_norm_fn = batch_norm_fn
     self._layer_norm = layer_norm
     self._spectral_norm = spectral_norm
+    self._wavelet_deconv= wavelet_deconv
 
   def __call__(self, x, y, is_training, reuse=tf.AUTO_REUSE):
     with tf.variable_scope(self.name, values=[x, y], reuse=reuse):

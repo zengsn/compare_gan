@@ -1,5 +1,5 @@
 # coding=utf-8
-# Copyright 2018 Google LLC & Hwalsuk Lee.
+# Copyright 2020, Shaoning Zeng.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Resnet generator and discriminator for CIFAR.
+"""Resnet generator and discriminator for MNIST-like datasets.
 
 Based on Table 4 from "Spectral Normalization for Generative Adversarial
 Networks", Miyato T. et al., 2018. [https://arxiv.org/pdf/1802.05957.pdf].
@@ -33,7 +33,7 @@ import tensorflow as tf
 
 @gin.configurable
 class Generator(resnet_ops.ResNetGenerator):
-  """ResNet generator, 4 blocks, supporting 32x32 resolution."""
+  """ResNet generator, 2 blocks, supporting 28x28 resolution."""
 
   def __init__(self,
                hierarchical_z=False,
@@ -66,11 +66,11 @@ class Generator(resnet_ops.ResNetGenerator):
       is_training: boolean, are we in train or eval model.
 
     Returns:
-      A tensor of size [batch_size, 32, 32, colors] with values in [0, 1].
+      A tensor of size [batch_size, 28, 28, colors] with values in [0, 1].
     """
-    assert self._image_shape[0] == 32
-    assert self._image_shape[1] == 32
-    num_blocks = 3
+    assert self._image_shape[0] == 28
+    assert self._image_shape[1] == 28
+    num_blocks = 2 # update network to generate 28x28 noise
     z_dim = z.shape[1].value
 
     if self._embed_z:
@@ -87,14 +87,15 @@ class Generator(resnet_ops.ResNetGenerator):
       z0 = z
       z_per_block = num_blocks * [z]
 
-    output = ops.linear(z0, 4 * 4 * 256, scope="fc_noise",
+    init_channels = 256
+    output = ops.linear(z0, 7 * 7 * init_channels, scope="fc_noise",
                         use_sn=self._spectral_norm)
-    output = tf.reshape(output, [-1, 4, 4, 256], name="fc_reshaped")
-    for block_idx in range(3):
+    output = tf.reshape(output, [-1, 7, 7, init_channels], name="fc_reshaped")
+    for block_idx in range(num_blocks):
       block = self._resnet_block(
           name="B{}".format(block_idx + 1),
-          in_channels=256,
-          out_channels=256,
+          in_channels=init_channels,
+          out_channels=init_channels,
           scale="up")
       output = block(
           output,
@@ -119,7 +120,7 @@ class Generator(resnet_ops.ResNetGenerator):
 
 @gin.configurable
 class Discriminator(resnet_ops.ResNetDiscriminator):
-  """ResNet discriminator, 4 blocks, supporting 32x32 with 1 or 3 colors."""
+  """ResNet discriminator, 2 blocks, supporting 28x28 with 1 or 3 colors."""
 
   def __init__(self, project_y=False, **kwargs):
     super(Discriminator, self).__init__(**kwargs)
@@ -129,7 +130,7 @@ class Discriminator(resnet_ops.ResNetDiscriminator):
     """Apply the discriminator on a input.
 
     Args:
-      x: `Tensor` of shape [batch_size, 32, 32, ?] with real or fake images.
+      x: `Tensor` of shape [batch_size, 28, 28, ?] with real or fake images.
       y: `Tensor` of shape [batch_size, num_classes] with one hot encoded
         labels.
       is_training: Boolean, whether the architecture should be constructed for
@@ -140,14 +141,18 @@ class Discriminator(resnet_ops.ResNetDiscriminator):
       before the final output activation function and logits form the second
       last layer.
     """
-    resnet_ops.validate_image_inputs(x)
+    resnet_ops.validate_image_inputs(x, False)
     colors = x.shape[3].value
     if colors not in [1, 3]:
       raise ValueError("Number of color channels not supported: {}".format(
           colors))
 
     output = x
-    for block_idx in range(4):
+    if self._wavelet_deconv: # Add WaveletDeconv layer
+        output = ops.waveletDeconv(output)
+    # End WaveletDeconv layer
+    
+    for block_idx in range(2): # make it same as generator
       block = self._resnet_block(
           name="B{}".format(block_idx + 1),
           in_channels=colors if block_idx == 0 else 128,
