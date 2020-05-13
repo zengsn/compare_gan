@@ -23,7 +23,7 @@ Figure 1. WaveletGAN architecture using wavelet filtering to homogenize the gene
         output = ops.waveletDeconv(output)
 ```  
 
-The code can be found in [resnet_mnist.py](./compare_gan/architectures/resnet_mnist.py) and [resnet_cifar.py](./compare_gan/architectures/resnet_cifar.py), which are the two implementations described in our paper (see Table 1).
+The code can be found in [resnet_mnist.py](./compare_gan/architectures/resnet_mnist.py).
 
 ## Requirements
 
