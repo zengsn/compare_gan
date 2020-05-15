@@ -2,7 +2,7 @@ NOTE: This repository is fored from google/compare_gan, and contains the impleme
 
 # Noise Homogenization via Multi-Channel Wavelet Filtering for High-Fidelity Sample Generation in GANs
 
-In the generator of typical Generative Adversarial Networks (GANs), a noise is inputted to generate fake samples via a series of convolutional operations. However, current noise generation models merely relies on the information from the pixel space, which increases the difficult to approach the target distribution. In this work, we propose a novel multi-channel wavelet-based filtering for GANs, to cope with this problem. When embedding a wavelet deconvolution layer in the generator, the resultant GAN, called WaveletGAN, takes advantage of wavelet deconvolution to learn a filtering with multiple channels, which can efficiently homogenize the generated noise via an averaging operation, so as to generate high-fidelity samples. 
+In the generator of typical Generative Adversarial Networks (GANs), a noise is inputted to generate fake samples via a series of convolutional operations. However, current noise generation models merely relies on the information from the pixel space, which increases the difficult to approach the target distribution. In this work, we propose a novel multi-channel wavelet-based filtering for GANs, to cope with this problem. When embedding a wavelet deconvolution layer in the generator, the resultant GAN, called WaveletGAN, takes advantage of wavelet deconvolution to learn a filtering with multiple channels, which can efficiently homogenize the generated noise via an averaging operation, so as to generate high-fidelity samples. ([arXiv preprint arXiv:2005.06707](https://arxiv.org/abs/2005.06707))
 
 ![WaveletGAN](./wavelet_gan/fig1_idea.jpg)
 
