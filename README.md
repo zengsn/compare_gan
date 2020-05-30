@@ -132,9 +132,14 @@ sudo apt install cuda-10-0
 pip install tensorflow-gpu==1.13.1  
 ```   
 
-Install a newer version of tensorflow-datasets:
+Install a newer version of tensorflow-datasets for KMNIST:
 ```   
 pip install tensorflow-datasets==1.0.2
+```   
+
+However, make sure to use 1.0.1 for manually preparing ImageNet:
+```   
+pip install tensorflow-datasets==1.0.1
 ```   
 
 ## Tip.2 Some known issues
